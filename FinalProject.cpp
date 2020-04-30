@@ -36,6 +36,16 @@ EdgeNode::EdgeNode(int key, int weight){
     this->weight = weight;
     this->next = NULL;
 }
+class Node{
+public:
+    int key;
+    Node *next;
+    Node(int);
+};
+Node::Node(int key){
+    this->key = key;
+    this->next = NULL;
+}
 
 class WeightedGraph{
 private: 
@@ -45,13 +55,12 @@ public:
     int adjMatrix[5][vertices];
 
     bool directed;
+    Node **head;
     EdgeNode *edges[MAX];
     WeightedGraph(bool);
 
-    void setLabel(int key, const char []);
-    char* getLabel(int key);
     int tsp(int tspPath[], int start);
-    void print();
+    void printConnections();
     void printMatrix();
     void matrix();
     void addEdge(int x, int y, int weight, bool directed);
@@ -92,15 +101,16 @@ int WeightedGraph::tsp(int tspPath[], int start){
             int currPathWeight = 0;
 
             int temp = start;
-            for (int i = 0; i <vertex.size(); i++){
-                tempArr[i] = vertex[i];
+            for (int i = 0; i <vertex.size()+1; i++){
                 currPathWeight += adjMatrix[temp][vertex[i]];
-                temp = vertex[i];           
+                temp = vertex[i];
+                tempArr[i] = temp;           
             }
             currPathWeight += adjMatrix[temp][start];
-            if(std::min(minPath, currPathWeight)){
-                minPath = std::min(minPath,currPathWeight);
-                for(int i = 0; i<5;i++){
+            
+            minPath = std::min(minPath, currPathWeight);
+            if(minPath == currPathWeight){
+                for(int i = 0; i<4;i++){
                     tspPath[i] = tempArr[i];
                 }
             }
@@ -143,11 +153,11 @@ void WeightedGraph::matrix(){
     tracker++;
     }    
 }
-void WeightedGraph::print(){
+void WeightedGraph::printConnections(){
 
     for(int v = 0; v < (6); v ++){
         if(this->edges[v] != NULL){
-            std::cout << cities[v] << " has neighbors: \n";
+            std::cout << cities[v] << " connects to: \n";
             EdgeNode *curr = this->edges[v];
             while(curr != NULL){
                 std::cout << cities[curr->key] << " distance - " << curr->weight << std::endl;
@@ -207,13 +217,14 @@ return distance[end];
 }
 void tspPrint(int tspPath[], int miles){
 
-    int tempIndex = 0;
-    std::cout << "\n\nShortest path: " << cities[0];
+    std::cout << "\n\nShortest path: " << cities[0] <<" -> ";
     for(int i =0; i < 4; i++){
-        tempIndex = tspPath[i];
-        std::cout << " -> " << cities[tempIndex];
-        if (i == 4)
-            std::cout << " -> " << cities[0];
+        if(i == 3)
+            std::cout << cities[tspPath[i]] << " -> " << cities[0];
+        else{
+            std::cout << cities[tspPath[i]] << " -> ";
+        }
+
     }
     std::cout << "\nMiles: " << miles;
     std::cout << "\nGallons of gas (40 mpg): " << miles/MPG;
@@ -228,12 +239,13 @@ work->addEdge(0, 1, 518, false);
 work->addEdge(0, 2, 444, false);
 work->addEdge(0, 3, 218, false);
 work->addEdge(0, 4, 704, false);
-work->addEdge(3, 4, 808, false);
+work->addEdge(1, 4, 841, false);
 work->addEdge(2, 3, 571, false);
 work->addEdge(2, 1, 420, false);
-work->addEdge(1, 4, 841, false);
+work->addEdge(3, 4, 808, false);
 
-work->print();
+
+work->printConnections();
 work->matrix();
 work->printMatrix();
 // 0 - Reno
