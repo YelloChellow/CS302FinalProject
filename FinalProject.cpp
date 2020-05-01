@@ -1,10 +1,13 @@
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <bits/stdc++.h>
 #include <vector>
 #include <string>
+
 //Given Miles per gallon
 //Nevada Gas Price - 2.324
+//MAX used for making arrays
 #define MPG 40
 #define NPG 2.324
 #define MAX 100
@@ -49,10 +52,10 @@ Node::Node(int key){
 
 class WeightedGraph{
 private: 
-    static const size_t vertices = 5;
+    static const size_t vertexs = 5;
 
 public:
-    int adjMatrix[5][vertices];
+    int adjMatrix[vertexs][vertexs];
 
     bool directed;
     Node **head;
@@ -76,7 +79,8 @@ WeightedGraph::WeightedGraph(bool directed){
 
 void WeightedGraph::addEdge(int x, int y, int weight, bool directed){
 
-    if(x+1 > 0 && x+1 < 6 && y+1 > 0 && y+1 <6){
+
+    if(x+1 > 0 && x < vertexs + 1 && y+1 > 0 && y <vertexs +1){
         EdgeNode *edge = new EdgeNode(y, weight);
         edge->next = this->edges[x];
         this->edges[x] = edge;
@@ -89,42 +93,58 @@ void WeightedGraph::addEdge(int x, int y, int weight, bool directed){
 
 int WeightedGraph::tsp(int tspPath[], int start){
     std::vector<int> vertex;
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < vertexs; i++){
         if (i != start)
             vertex.push_back(i);
     }
-        int tempArr[5];
-
+        int tempArr[vertexs];
         int minPath = INT_MAX;
         
+        std::ofstream out;
+        out.open("FinalProjectText.txt");
+        out<< "OUTPUT OF ALL PATHS AND MILES:\n\n";
+
         do{
             int currPathWeight = 0;
 
             int temp = start;
+            out<< cities[temp]<< " -> ";
             for (int i = 0; i <vertex.size()+1; i++){
                 currPathWeight += adjMatrix[temp][vertex[i]];
                 temp = vertex[i];
                 tempArr[i] = temp;           
             }
             currPathWeight += adjMatrix[temp][start];
-            
+
+            for(int i = 0;i < vertexs-1;i++){
+                if( i == vertexs-2)
+                    out<< cities[tempArr[i]]<< " -> ";
+                else
+                    out<< cities[tempArr[i]] << " -> ";
+            }
+            out<< cities[temp];
+
+            out<<  "\tMiles - "<< currPathWeight <<std::endl;
+
             minPath = std::min(minPath, currPathWeight);
             if(minPath == currPathWeight){
-                for(int i = 0; i<4;i++){
+                for(int i = 0; i < vertexs-1;i++){
                     tspPath[i] = tempArr[i];
                 }
             }
         }while(next_permutation(vertex.begin(), vertex.end()));        
-   
+   out.close();
 return minPath;
 }
 
 void WeightedGraph::printMatrix(){
-    std::cout << std::setw(18)<<" "<<"City x City Matrix by miles\n"; 
-    std::cout << "    " << std::setfill('_')<< std::setw(50)<<" \n"<<std::setfill(' ');
-    for(int i = 0;i < 5; i++){
+    std::cout << std::setw(18)<<" "<<"City x City Matrix by miles\n\n";
+    std::cout << std::setw(20) << " " << std::setw(5) << "Reno"<< std::setw(5) << "SLC"
+              << std::setw(7) << "LV" << std::setw(7) << "SF" << std::setw(10) << "Seattle" << std::endl;
+    std::cout << "    " << std::setfill('-')<< std::setw(52)<<" \n"<<std::setfill(' ');
+    for(int i = 0;i < vertexs; i++){
         std::cout << std::setw(16) <<cities[i];
-        for(int j =0; j <5;j++){
+        for(int j =0; j < vertexs;j++){
             std::cout<<" - "<< std::setw(4) << adjMatrix[j][i];
         }
         std::cout<< "\n";
@@ -134,19 +154,19 @@ void WeightedGraph::matrix(){
     int tempNum, tracker = 0;
     int connection = 10;
 
-    for(int v = 0; v < (5); v++){
-        if(this->edges[v] != NULL){
-                adjMatrix[tracker][v] = 0;
-                connection -= v;
-                EdgeNode *curr = this->edges[v];
+    for(int i = 0; i < (5); i++){
+        if(this->edges[i] != NULL){
+                adjMatrix[tracker][i] = 0;
+                connection -= i;
+                EdgeNode *curr = this->edges[i];
                 while(curr != NULL){
                     connection -= curr->key;
-                    adjMatrix[curr->key][v] = curr->weight;
+                    adjMatrix[curr->key][i] = curr->weight;
                     curr = curr->next;
                 }
                 if(connection != 0){
-                tempNum = dijkstraPath(connection, v);
-                adjMatrix[connection][v] = tempNum;
+                tempNum = dijkstraPath(connection, i);
+                adjMatrix[connection][i] = tempNum;
                 }
         }
     connection = 10;
@@ -155,12 +175,12 @@ void WeightedGraph::matrix(){
 }
 void WeightedGraph::printConnections(){
 
-    for(int v = 0; v < (6); v ++){
-        if(this->edges[v] != NULL){
-            std::cout << cities[v] << " connects to: \n";
-            EdgeNode *curr = this->edges[v];
+    for(int i = 0; i < vertexs; i++){
+        if(this->edges[i] != NULL){
+            std::cout << std::setw(10) << cities[i] << " connects to: \n";
+            EdgeNode *curr = this->edges[i];
             while(curr != NULL){
-                std::cout << cities[curr->key] << " distance - " << curr->weight << std::endl;
+                std::cout <<std::setw(14) << cities[curr->key] << " distance - " << curr->weight << " miles"<< std::endl;
                 curr = curr->next;
             }
             std::cout<<std::endl;
@@ -215,11 +235,11 @@ int WeightedGraph::dijkstraPath(int end, int start){
 return distance[end];
   
 }
-void tspPrint(int tspPath[], int miles){
+void tspPrint(int tspPath[], int miles, int vertexs){
 
-    std::cout << "\n\nShortest path: " << cities[0] <<" -> ";
-    for(int i =0; i < 4; i++){
-        if(i == 3)
+    std::cout << "\n\nMinimial cost path: " << cities[0] <<" -> ";
+    for(int i =0; i < vertexs-1; i++){
+        if(i == vertexs-2)
             std::cout << cities[tspPath[i]] << " -> " << cities[0];
         else{
             std::cout << cities[tspPath[i]] << " -> ";
@@ -229,7 +249,27 @@ void tspPrint(int tspPath[], int miles){
     std::cout << "\nMiles: " << miles;
     std::cout << "\nGallons of gas (40 mpg): " << miles/MPG;
     std::cout << "\nCost using Nevada average per gallon (2.324): " << (miles/MPG)*NPG<<std::endl;
+
+    std::ofstream out;
+    out.open ("FinalProjectText.txt", std::ios::out | std::ios::app);
+        
+        out << "\n\nMinimial cost path: " << cities[0] <<" -> ";
+        for(int i =0; i < vertexs-1; i++){
+            if(i == vertexs-2)
+                out << cities[tspPath[i]] << " -> " << cities[0];
+            else{
+                out << cities[tspPath[i]] << " -> ";
+            }
+
+        }
+        out << "\nMiles: " << miles;
+        out << "\nGallons of gas (40 mpg): " << miles/MPG;
+        out << "\nCost using Nevada average per gallon (2.324): " << (miles/MPG)*NPG<<std::endl;
+
+    out.close();
+
 }
+
 int main(){
 
 WeightedGraph *work = new WeightedGraph(false);
@@ -251,6 +291,6 @@ work->printMatrix();
 // 0 - Reno
 int tspPath[5];
 int tspMiles = work->tsp(tspPath, 0);
-tspPrint(tspPath, tspMiles);
+tspPrint(tspPath, tspMiles, 5);
 
 }

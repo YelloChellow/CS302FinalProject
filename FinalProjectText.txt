@@ -1,0 +1,32 @@
+OUTPUT OF ALL PATHS AND MILES:
+
+Reno -> Salt Lake City -> Las Vegas -> San Fransico -> Seattle -> Reno	Miles - 3021
+Reno -> Salt Lake City -> Las Vegas -> Seattle -> San Fransico -> Reno	Miles - 3112
+Reno -> Salt Lake City -> San Fransico -> Las Vegas -> Seattle -> Reno	Miles - 3677
+Reno -> Salt Lake City -> San Fransico -> Seattle -> Las Vegas -> Reno	Miles - 3654
+Reno -> Salt Lake City -> Seattle -> Las Vegas -> San Fransico -> Reno	Miles - 3296
+Reno -> Salt Lake City -> Seattle -> San Fransico -> Las Vegas -> Reno	Miles - 3182
+Reno -> Las Vegas -> Salt Lake City -> San Fransico -> Seattle -> Reno	Miles - 3112
+Reno -> Las Vegas -> Salt Lake City -> Seattle -> San Fransico -> Reno	Miles - 2731
+Reno -> Las Vegas -> San Fransico -> Salt Lake City -> Seattle -> Reno	Miles - 3296
+Reno -> Las Vegas -> San Fransico -> Seattle -> Salt Lake City -> Reno	Miles - 3182
+Reno -> Las Vegas -> Seattle -> Salt Lake City -> San Fransico -> Reno	Miles - 3387
+Reno -> Las Vegas -> Seattle -> San Fransico -> Salt Lake City -> Reno	Miles - 3654
+Reno -> San Fransico -> Salt Lake City -> Las Vegas -> Seattle -> Reno	Miles - 3226
+Reno -> San Fransico -> Salt Lake City -> Seattle -> Las Vegas -> Reno	Miles - 3387
+Reno -> San Fransico -> Las Vegas -> Salt Lake City -> Seattle -> Reno	Miles - 2754
+Reno -> San Fransico -> Las Vegas -> Seattle -> Salt Lake City -> Reno	Miles - 3296
+Reno -> San Fransico -> Seattle -> Salt Lake City -> Las Vegas -> Reno	Miles - 2731
+Reno -> San Fransico -> Seattle -> Las Vegas -> Salt Lake City -> Reno	Miles - 3112
+Reno -> Seattle -> Salt Lake City -> Las Vegas -> San Fransico -> Reno	Miles - 2754
+Reno -> Seattle -> Salt Lake City -> San Fransico -> Las Vegas -> Reno	Miles - 3296
+Reno -> Seattle -> Las Vegas -> Salt Lake City -> San Fransico -> Reno	Miles - 3226
+Reno -> Seattle -> Las Vegas -> San Fransico -> Salt Lake City -> Reno	Miles - 3677
+Reno -> Seattle -> San Fransico -> Salt Lake City -> Las Vegas -> Reno	Miles - 3112
+Reno -> Seattle -> San Fransico -> Las Vegas -> Salt Lake City -> Reno	Miles - 3021
+
+
+Minimial cost path: Reno -> San Fransico -> Seattle -> Salt Lake City -> Las Vegas -> Reno
+Miles: 2731
+Gallons of gas (40 mpg): 68
+Cost using Nevada average per gallon (2.324): 158.032
