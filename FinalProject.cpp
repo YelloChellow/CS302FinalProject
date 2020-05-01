@@ -12,8 +12,10 @@
 #define NPG 2.324
 #define MAX 100
 
-//This is a global for the cities
-//Goal, change this to a label within classes
+// This is a global for the cities
+// Goal, change this to a label within classes
+// So... along with storing key, we store label being the name.
+// This way we can get away from globals and make it more of a true class.
 const char *cities[5] = {"Reno", 
                         "Salt Lake City", 
                         "Las Vegas", 
@@ -69,7 +71,7 @@ class WeightedGraph{
 private: 
     // This is a static member just for the purpose of hard coding the Adjancey Matrix.
     // May change this to a vector and pass from main into class.
-    // Would be better memory management.
+    // Would be better memory management and more a true class.
     static const size_t vertexs = 5;
 
 public:
