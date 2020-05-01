@@ -214,7 +214,7 @@ void WeightedGraph::matrix(){
     // If we give each vertex a value 0-4, where 4 is does not connect to X
     // Then (# of edges) - 4 - 3 - 2 - 0 = x = 1
     // We then can use this with dijkstraPath to get a weight for (4,X)
-    int connection = 10;
+    int connection = (vertexs*(vertexs-1))/2;
     
     // Converts list into matrix.
     for(int i = 0; i < vertexs; i++){
@@ -239,7 +239,7 @@ void WeightedGraph::matrix(){
                 }
         }
     // Reset connection
-    connection = 10;
+    connection = (vertexs*(vertexs-1))/2;
     tracker++;
     }    
 }
