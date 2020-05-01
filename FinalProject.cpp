@@ -210,11 +210,9 @@ void WeightedGraph::matrix(){
     // Counters
     int tempNum, tracker = 0;
     // Connection is to track missing direct connections.
-    // vertex * 2 = possible (x,y) paths.  
     // If we give each vertex a value 0-4, where 4 is does not connect to X
     // Then 10 - 4 - 3 - 2 - 0 = 1 
     // We then can use this with dijkstraPath to get a weight for (4,X)
-    // When I'm at my computer, i'll change this to vertex * 2
     int connection = 10;
     
     // Converts list into matrix.
