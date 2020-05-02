@@ -1,3 +1,4 @@
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -12,15 +13,13 @@
 #define NPG 2.324
 #define MAX 100
 
-// This is a global for the cities
-// Goal, change this to a label within classes
-// So... along with storing key, we store label being the name.
-// This way we can get away from globals and make it more of a true class.
-const char *cities[5] = {"Reno", 
+// Old Global
+/*const char *cities[5] = {"Reno", 
                         "Salt Lake City", 
                         "Las Vegas", 
                         "San Fransico", 
                         "Seattle"};    
+*/
 
 // EdgeNode Class will connect node to node
 // Stores key(ex: 0, 1, 2, 3)
@@ -30,7 +29,6 @@ class EdgeNode{
     public:
         int key;
         int weight;
-        
         // For creating nodes, next being the next node in line.
         EdgeNode *next;
         // Constructors for EdgeNodes.
@@ -75,6 +73,7 @@ private:
     static const size_t vertexs = 5;
 
 public:
+    const char *label[MAX] = {};
     // Matrix for the purpose of solving Travelling Salesman Problem.
     int adjMatrix[vertexs][vertexs];
     // For identifying undirected and directered edges.
@@ -156,7 +155,7 @@ int WeightedGraph::tsp(int tspPath[], int start){
             int currPathWeight = 0;
             int temp = start;
           
-            out<< cities[temp]<< " -> ";
+            out<< this->label[temp]<< " -> ";
             // This loop will traverse the matrix adding current path weight
             for (int i = 0; i <vertex.size()+1; i++){
                 currPathWeight += adjMatrix[temp][vertex[i]];
@@ -170,12 +169,12 @@ int WeightedGraph::tsp(int tspPath[], int start){
             // vertex - 1 due to start has been removed from path
             for(int i = 0;i < vertexs-1;i++){
                 if( i == vertexs-2)
-                    out<< cities[tempArr[i]]<< " -> ";
+                    out<< this->label[tempArr[i]]<< " -> ";
                 else
-                    out<< cities[tempArr[i]] << " -> ";
+                    out<< this->label[tempArr[i]] << " -> ";
             }
             // Output final stop and current path weight
-            out<< cities[temp];
+            out<< this->label[temp];
             out<<  "\tMiles - "<< currPathWeight <<std::endl;
             
             // If current path is new minimal cost path, replace tspPath
@@ -199,7 +198,7 @@ void WeightedGraph::printMatrix(){
               << std::setw(7) << "LV" << std::setw(7) << "SF" << std::setw(10) << "Seattle" << std::endl;
     std::cout << "    " << std::setfill('-')<< std::setw(52)<<" \n"<<std::setfill(' ');
     for(int i = 0;i < vertexs; i++){
-        std::cout << std::setw(16) <<cities[i];
+        std::cout << std::setw(16) <<this->label[i];
         for(int j =0; j < vertexs;j++){
             std::cout<<" - "<< std::setw(4) << adjMatrix[j][i];
         }
@@ -250,10 +249,10 @@ void WeightedGraph::printConnections(){
 
     for(int i = 0; i < vertexs; i++){
         if(this->edges[i] != NULL){
-            std::cout << std::setw(10) << cities[i] << " connects to: \n";
+            std::cout << std::setw(10) << this->label[i] << " connects to: \n";
             EdgeNode *curr = this->edges[i];
             while(curr != NULL){
-                std::cout <<std::setw(14) << cities[curr->key] << " distance - " << curr->weight << " miles"<< std::endl;
+                std::cout <<std::setw(14) << this->label[curr->key] << " distance - " << curr->weight << " miles"<< std::endl;
                 curr = curr->next;
             }
             std::cout<<std::endl;
@@ -312,14 +311,14 @@ return distance[end];
 }
 
 // Prints out solution to traveling salesman problem to terminal and outfile
-void tspPrint(int tspPath[], int miles, int vertexs){
+void tspPrint(int tspPath[], int miles, int vertexs, WeightedGraph* work){
 
-    std::cout << "\n\nMinimial cost path: " << cities[0] <<" -> ";
+    std::cout << "\n\nMinimial cost path: " << work->label[0] <<" -> ";
     for(int i =0; i < vertexs-1; i++){
         if(i == vertexs-2)
-            std::cout << cities[tspPath[i]] << " -> " << cities[0];
+            std::cout << work->label[tspPath[i]] << " -> " << work->label[0];
         else{
-            std::cout << cities[tspPath[i]] << " -> ";
+            std::cout << work->label[tspPath[i]] << " -> ";
         }
 
     }
@@ -331,12 +330,12 @@ void tspPrint(int tspPath[], int miles, int vertexs){
     std::ofstream out;
     out.open ("FinalProjectText.txt", std::ios::out | std::ios::app);
         
-        out << "\n\nMinimial cost path: " << cities[0] <<" -> ";
+        out << "\n\nMinimial cost path: " << work->label[0] <<" -> ";
         for(int i =0; i < vertexs-1; i++){
             if(i == vertexs-2)
-                out << cities[tspPath[i]] << " -> " << cities[0];
+                out << work->label[tspPath[i]] << " -> " << work->label[0];
             else{
-                out << cities[tspPath[i]] << " -> ";
+                out << work->label[tspPath[i]] << " -> ";
             }
 
         }
@@ -353,7 +352,16 @@ int main(){
 WeightedGraph *work = new WeightedGraph(false);
 
 // Setting all edges with mileage I googled, false = undirected
-// 0 - Reno, 1 - Salt Lake City, 2 - Las Vegas, 3 - San Fran, 4 - Seattle 
+
+// Load labels, might move this to Node/NodeEdge class.
+// 0 - Reno, 1 - Salt Lake City, 2 - Las Vegas, 3 - San Fran, 4 - Seattle
+work->label[0] = "Reno";
+work->label[1] = "Salt Lake City";
+work->label[2] = "Las Vegas";
+work->label[3] = "San Fransico";
+work->label[4] = "Seatle";
+
+
 work->addEdge(0, 1, 518, false);
 work->addEdge(0, 2, 444, false);
 work->addEdge(0, 3, 218, false);
@@ -371,5 +379,5 @@ work->printMatrix();
 // vertexs = 5
 int tspPath[5];
 int tspMiles = work->tsp(tspPath, 0);
-tspPrint(tspPath, tspMiles, 5);
+tspPrint(tspPath, tspMiles, 5, work);
 }
