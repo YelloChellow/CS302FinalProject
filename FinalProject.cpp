@@ -1,10 +1,8 @@
-
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <bits/stdc++.h>
 #include <vector>
-#include <string>
 
 //Given Miles per gallon
 //Nevada Gas Price - 2.324
@@ -54,6 +52,7 @@ EdgeNode::EdgeNode(int key, int weight){
 class Node{
 public:
     int key;
+    
     Node *next;
     Node(int);
 };
@@ -67,15 +66,13 @@ Node::Node(int key){
 // Needs work with addressing some hard coding.
 class WeightedGraph{
 private: 
-    // This is a static member just for the purpose of hard coding the Adjancey Matrix.
-    // May change this to a vector and pass from main into class.
-    // Would be better memory management and more a true class.
-    static const size_t vertexs = 5;
+    // Holds the amount of vertexes for later calculations
+    int vertexes;
 
 public:
-    const char *label[MAX] = {};
+    const char *label[MAX];
     // Matrix for the purpose of solving Travelling Salesman Problem.
-    int adjMatrix[vertexs][vertexs];
+  //  int adjMatrix[vertexes][vertexes];
     // For identifying undirected and directered edges.
     bool directed;
     // Array that contains edges
@@ -83,15 +80,16 @@ public:
     // Constructor with (directed/undirected) parameter.
     WeightedGraph(bool);
     
+    void setVertexes(int V);
     // Solves Traveling SalesMan Problem (min array path, start node key) parameters
-    int tsp(int tspPath[], int start);
+    int tsp(int **adjMatrix, int tspPath[], int start);
     // Prints all edges, ex: Reno to Seattle distance - 704 miles
     void printConnections();
     // Prints Adjancey Matrix of Edge Weights
-    void printMatrix();
+    void printMatrix(int **adjMatrix);
     // Takes all edges and forms a matrix of weights.
     // Uses dijkstraPath to solve A to C = (A + B) + (B + C) connections.
-    void matrix();
+    void matrix(int **adjMatrix);
     // Adds edges to edge array ( start, end, edge weight, undirected/directed )
     void addEdge(int x, int y, int weight, bool directed);
     // Finds shortest path between two points.
@@ -100,16 +98,21 @@ public:
 // Constructor ( undirected/directed ) parameter
 WeightedGraph::WeightedGraph(bool directed){
     this->directed = directed;
-    
+    this->vertexes = 0;
     // Defaults all edges to NULL
     for(int i = 0; i < MAX; i++){
         this->edges[i] = NULL;
+        this->label[i] = NULL;
     }
+}
+
+void WeightedGraph::setVertexes(int V){
+    this->vertexes = V;
 }
 // addEdge will add a weighted edge to edges[] with ( start, end, edge weight, undirected/directed ) parameter
 void WeightedGraph::addEdge(int x, int y, int weight, bool directed){
-    // This will bounds check between 0  to vertexs. 
-    if(x+1 > 0 && x < vertexs + 1 && y+1 > 0 && y <vertexs +1){
+    // This will bounds check between 0  to vertexes. 
+    if(x+1 > 0 && x < vertexes + 1 && y+1 > 0 && y <vertexes +1){
         // This will create and set weight to y
         EdgeNode *edge = new EdgeNode(y, weight);
         // This will set created edge->next to x's node location in edges[] 
@@ -129,16 +132,16 @@ void WeightedGraph::addEdge(int x, int y, int weight, bool directed){
 // Uses an adaption of hamiltons circuit algorithm
 // (correct path array, starting point) parameters
 // returns int
-int WeightedGraph::tsp(int tspPath[], int start){
+int WeightedGraph::tsp(int **adjMatrix, int tspPath[], int start){
     // Vector used to hold indexs of edges
     std::vector<int> vertex;
-    for(int i = 0; i < vertexs; i++){
+    for(int i = 0; i < vertexes; i++){
         if (i != start)
             vertex.push_back(i);
     }
         // Array to copy correct current path into
         // Min cost path container
-        int tempArr[vertexs];
+        int tempArr[vertexes];
         int minPath = INT_MAX; 
          
         // For this project, output of all paths and mileage was required.
@@ -146,7 +149,7 @@ int WeightedGraph::tsp(int tspPath[], int start){
         // Reason:  To avoid clutting of the screen
         std::ofstream out;
         out.open("FinalProjectText.txt");
-        out<< "OUTPUT OF ALL PATHS AND MILES:\n\n";
+        out<< "OUTPUT OF ALL PATHS AND MILES:\nnote that in scenarios A to C = (A to B) + (B to C), B is not printed as a destination\n\n";
         
         // Do While Loop computing all paths
         do{
@@ -167,8 +170,8 @@ int WeightedGraph::tsp(int tspPath[], int start){
             
             // This loop is for outputting current path to text file.
             // vertex - 1 due to start has been removed from path
-            for(int i = 0;i < vertexs-1;i++){
-                if( i == vertexs-2)
+            for(int i = 0;i < vertexes-1;i++){
+                if( i == vertexes-2)
                     out<< this->label[tempArr[i]]<< " -> ";
                 else
                     out<< this->label[tempArr[i]] << " -> ";
@@ -180,7 +183,7 @@ int WeightedGraph::tsp(int tspPath[], int start){
             // If current path is new minimal cost path, replace tspPath
             minPath = std::min(minPath, currPathWeight);
             if(minPath == currPathWeight){
-                for(int i = 0; i < vertexs-1;i++){
+                for(int i = 0; i < vertexes-1;i++){
                     tspPath[i] = tempArr[i];
                 }
             }
@@ -192,14 +195,14 @@ return minPath;
 }
 
 // Prints the matrix to terminal created via matrix()
-void WeightedGraph::printMatrix(){
+void WeightedGraph::printMatrix(int **adjMatrix){
     std::cout << std::setw(18)<<" "<<"City x City Matrix by miles\n\n";
     std::cout << std::setw(20) << " " << std::setw(5) << "Reno"<< std::setw(5) << "SLC"
               << std::setw(7) << "LV" << std::setw(7) << "SF" << std::setw(10) << "Seattle" << std::endl;
     std::cout << "    " << std::setfill('-')<< std::setw(52)<<" \n"<<std::setfill(' ');
-    for(int i = 0;i < vertexs; i++){
+    for(int i = 0;i < vertexes; i++){
         std::cout << std::setw(16) <<this->label[i];
-        for(int j =0; j < vertexs;j++){
+        for(int j =0; j < vertexes;j++){
             std::cout<<" - "<< std::setw(4) << adjMatrix[j][i];
         }
         std::cout<< "\n";
@@ -207,18 +210,18 @@ void WeightedGraph::printMatrix(){
 }
 
 // Creates a matrix stored in adjMatrix
-void WeightedGraph::matrix(){
+void WeightedGraph::matrix(int **adjMatrix){
     // Counters
     int tempNum, tracker = 0;
     // Connection is to track missing direct connections.
-    // Note that the number of edges = (n*(n-1))/2 where n = # of vertexs
+    // Note that the number of edges = (n*(n-1))/2 where n = # of vertexes
     // If we give each vertex a value 0-4, where 4 is does not connect to X
     // Then (# of edges) - 4 - 3 - 2 - 0 = x = 1
     // We then can use this with dijkstraPath to get a weight for (4,X)
-    int connection = (vertexs*(vertexs-1))/2;
+    int connection = (vertexes*(vertexes-1))/2;
     
     // Converts list into matrix.
-    for(int i = 0; i < vertexs; i++){
+    for(int i = 0; i < vertexes; i++){
         // If end not end of edges array compute
         if(this->edges[i] != NULL){
                 // First, set node to it's as 0, ex: reno to reno = 0
@@ -240,14 +243,14 @@ void WeightedGraph::matrix(){
                 }
         }
     // Reset connection
-    connection = (vertexs*(vertexs-1))/2;
+    connection = (vertexes*(vertexes-1))/2;
     tracker++;
     }    
 }
 // Prints all connections to terminal
 void WeightedGraph::printConnections(){
 
-    for(int i = 0; i < vertexs; i++){
+    for(int i = 0; i < vertexes; i++){
         if(this->edges[i] != NULL){
             std::cout << std::setw(10) << this->label[i] << " connects to: \n";
             EdgeNode *curr = this->edges[i];
@@ -267,7 +270,7 @@ int WeightedGraph::dijkstraPath(int end, int start){
     int distance[MAX];
     int parent[MAX];
     EdgeNode *curr;
-    int currVertice, linkVertice, weight, minPath;
+    int currVertexes, linkVertexes, weight, minPath;
         // Set all containers to defaults.
         for(int i = 0; i < (MAX); i ++){
             mark[i] = false;
@@ -276,22 +279,22 @@ int WeightedGraph::dijkstraPath(int end, int start){
         }
     // Set to start position
     distance[start] = 0;
-    currVertice = start;
+    currVertexes = start;
     
     // Alogrithm that computes shortest path.
-    while(mark[currVertice] == false){
+    while(mark[currVertexes] == false){
 
-        mark[currVertice] = true;
-        curr = this->edges[currVertice];
+        mark[currVertexes] = true;
+        curr = this->edges[currVertexes];
 
         while(curr != NULL){
 
-            linkVertice = curr->key;
+            linkVertexes = curr->key;
             weight = curr->weight;
 
-            if((distance[currVertice] + weight) < distance[linkVertice]){
-                distance[linkVertice] = distance[currVertice] + weight;
-                parent[linkVertice] = currVertice;
+            if((distance[currVertexes] + weight) < distance[linkVertexes]){
+                distance[linkVertexes] = distance[currVertexes] + weight;
+                parent[linkVertexes] = currVertexes;
             }
             curr = curr->next;
         }
@@ -300,7 +303,7 @@ int WeightedGraph::dijkstraPath(int end, int start){
         minPath = INT_MAX;
         for(int i = 0; i < (MAX); i ++){
             if(!mark[i] && (distance[i] < minPath)){
-                currVertice = i;
+                currVertexes = i;
                 minPath = distance[i];
             }
         }
@@ -311,11 +314,11 @@ return distance[end];
 }
 
 // Prints out solution to traveling salesman problem to terminal and outfile
-void tspPrint(int tspPath[], int miles, int vertexs, WeightedGraph* work){
+void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
 
     std::cout << "\n\nMinimial cost path: " << work->label[0] <<" -> ";
-    for(int i =0; i < vertexs-1; i++){
-        if(i == vertexs-2)
+    for(int i =0; i < vertexes-1; i++){
+        if(i == vertexes-2)
             std::cout << work->label[tspPath[i]] << " -> " << work->label[0];
         else{
             std::cout << work->label[tspPath[i]] << " -> ";
@@ -331,8 +334,8 @@ void tspPrint(int tspPath[], int miles, int vertexs, WeightedGraph* work){
     out.open ("FinalProjectText.txt", std::ios::out | std::ios::app);
         
         out << "\n\nMinimial cost path: " << work->label[0] <<" -> ";
-        for(int i =0; i < vertexs-1; i++){
-            if(i == vertexs-2)
+        for(int i =0; i < vertexes-1; i++){
+            if(i == vertexes-2)
                 out << work->label[tspPath[i]] << " -> " << work->label[0];
             else{
                 out << work->label[tspPath[i]] << " -> ";
@@ -355,12 +358,18 @@ WeightedGraph *work = new WeightedGraph(false);
 
 // Load labels, might move this to Node/NodeEdge class.
 // 0 - Reno, 1 - Salt Lake City, 2 - Las Vegas, 3 - San Fran, 4 - Seattle
+// Many ways of approaching this, can collect user input.
+// Vertexes must be counted for as of this time.
 work->label[0] = "Reno";
 work->label[1] = "Salt Lake City";
 work->label[2] = "Las Vegas";
 work->label[3] = "San Fransico";
-work->label[4] = "Seatle";
+work->label[4] = "Seattle";
 
+// May change, add into edge node a incrementer to keep count of vertexes
+int vertexes =5;
+
+work->setVertexes(vertexes);
 
 work->addEdge(0, 1, 518, false);
 work->addEdge(0, 2, 444, false);
@@ -371,13 +380,20 @@ work->addEdge(2, 3, 571, false);
 work->addEdge(2, 1, 420, false);
 work->addEdge(3, 4, 808, false);
 
+// Create a 2D array for purpose of solving TSP problem.
+int **adjMatrix;
+adjMatrix = new int *[vertexes];
+for(int i = 0; i<vertexes; i++)
+    adjMatrix[i] = new int[vertexes];
+
 // Do some work.
 work->printConnections();
-work->matrix();
-work->printMatrix();
+work->matrix(adjMatrix);
+work->printMatrix(adjMatrix);
+
 // 0 - Reno
-// vertexs = 5
-int tspPath[5];
-int tspMiles = work->tsp(tspPath, 0);
-tspPrint(tspPath, tspMiles, 5, work);
+// vertexes = 5
+int tspPath[vertexes];
+int tspMiles = work->tsp(adjMatrix, tspPath, 0);
+tspPrint(tspPath, tspMiles, vertexes, work);
 }

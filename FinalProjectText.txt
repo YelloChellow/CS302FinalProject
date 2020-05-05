@@ -1,4 +1,5 @@
 OUTPUT OF ALL PATHS AND MILES:
+note that in scenarios A to C = (A to B) + (B to C), B is not printed as a destination
 
 Reno -> Salt Lake City -> Las Vegas -> San Fransico -> Seattle -> Reno	Miles - 3021
 Reno -> Salt Lake City -> Las Vegas -> Seattle -> San Fransico -> Reno	Miles - 3112
