@@ -3,6 +3,7 @@
 #include <fstream>
 #include <bits/stdc++.h>
 #include <vector>
+#include <string>
 
 //Given Miles per gallon
 //Nevada Gas Price - 2.324
@@ -27,22 +28,34 @@ class EdgeNode{
     public:
         int key;
         int weight;
+        std::string label;
         // For creating nodes, next being the next node in line.
         EdgeNode *next;
         // Constructors for EdgeNodes.
         EdgeNode(int);  // EdgeNode(key)
         EdgeNode(int, int);  // EdgeNode(key, weight)
+        EdgeNode(int, int, std::string);  // EdgeNode(key, weight)
 };
 // Constucter with (key) parameter
 EdgeNode::EdgeNode(int key){
     this->key = key;
     this->weight = 0;
+    this->label = "N/A";
     this->next = NULL;    // Sets next null location to NULL
 }
 // Constructor with (key, weight) parameter
 EdgeNode::EdgeNode(int key, int weight){
     this->key = key;
     this->weight = weight;
+    this->label = "N/A";
+    this->next = NULL;    // Sets next location to NULL
+}
+
+// Constructor with (key, weight) parameter
+EdgeNode::EdgeNode(int key, int weight, std::string L){
+    this->key = key;
+    this->weight = weight;
+    this->label = L;
     this->next = NULL;    // Sets next location to NULL
 }
 
@@ -70,9 +83,6 @@ private:
     int vertexes;
 
 public:
-    const char *label[MAX];
-    // Matrix for the purpose of solving Travelling Salesman Problem.
-  //  int adjMatrix[vertexes][vertexes];
     // For identifying undirected and directered edges.
     bool directed;
     // Array that contains edges
@@ -92,6 +102,7 @@ public:
     void matrix(int **adjMatrix);
     // Adds edges to edge array ( start, end, edge weight, undirected/directed )
     void addEdge(int x, int y, int weight, bool directed);
+    void addEdge(int x, int y, int weight, std::string X, std::string Y, bool directed);
     // Finds shortest path between two points.
     int dijkstraPath(int end, int start);
 };
@@ -102,7 +113,6 @@ WeightedGraph::WeightedGraph(bool directed){
     // Defaults all edges to NULL
     for(int i = 0; i < MAX; i++){
         this->edges[i] = NULL;
-        this->label[i] = NULL;
     }
 }
 
@@ -127,6 +137,28 @@ void WeightedGraph::addEdge(int x, int y, int weight, bool directed){
             // if its undirected, add to list of destination (y)
             if(!directed){
                 addEdge(y, x, weight, true);
+            }
+    }
+}
+
+// addEdge will add a weighted edge to edges[] with ( start, end, edge weight, undirected/directed ) parameter
+void WeightedGraph::addEdge(int x, int y, int weight,std::string X, std::string Y, bool directed){
+    // This will increment vertexes as the edges are added.
+    if(edges[x]==NULL)
+        vertexes++;
+    // This will bounds check between 0  to vertexes. 
+    if(x+1 > 0 && x < vertexes + 1 && y+1 > 0 && y <vertexes + 1){
+        // This will create and set weight to y
+        EdgeNode *edge = new EdgeNode(y, weight, X);
+        // This will set created edge->next to x's node location in edges[] 
+        edge->next = this->edges[x];
+        // This will set edge[x] to edgeNode of y 
+        this->edges[x] = edge;
+        // This will effective effectively create a linked list of nodes
+          
+            // if its undirected, add to list of destination (y)
+            if(!directed){
+                addEdge(y, x, weight, Y, X, true);
             }
     }
 }
@@ -161,7 +193,7 @@ int WeightedGraph::tsp(int **adjMatrix, int tspPath[], int start){
             int currPathWeight = 0;
             int temp = start;
           
-            out<< this->label[temp]<< " -> ";
+            out<< this->edges[temp]->label<< " -> ";
             // This loop will traverse the matrix adding current path weight
             for (int i = 0; i <vertex.size()+1; i++){
                 currPathWeight += adjMatrix[temp][vertex[i]];
@@ -175,12 +207,12 @@ int WeightedGraph::tsp(int **adjMatrix, int tspPath[], int start){
             // vertex - 1 due to start has been removed from path
             for(int i = 0;i < vertexes-1;i++){
                 if( i == vertexes-2)
-                    out<< this->label[tempArr[i]]<< " -> ";
+                    out<< this->edges[tempArr[i]]->label<< " -> ";
                 else
-                    out<< this->label[tempArr[i]] << " -> ";
+                    out<< this->edges[tempArr[i]]->label << " -> ";
             }
             // Output final stop and current path weight
-            out<< this->label[temp];
+            out<< this->edges[temp]->label;
             out<<  "\tMiles - "<< currPathWeight <<std::endl;
             
             // If current path is new minimal cost path, replace tspPath
@@ -204,7 +236,7 @@ void WeightedGraph::printMatrix(int **adjMatrix){
               << std::setw(7) << "LV" << std::setw(7) << "SF" << std::setw(10) << "Seattle" << std::endl;
     std::cout << "    " << std::setfill('-')<< std::setw(52)<<" \n"<<std::setfill(' ');
     for(int i = 0;i < vertexes; i++){
-        std::cout << std::setw(16) <<this->label[i];
+        std::cout << std::setw(16) << this->edges[i]->label;
         for(int j =0; j < vertexes;j++){
             std::cout<<" - "<< std::setw(4) << adjMatrix[j][i];
         }
@@ -255,10 +287,10 @@ void WeightedGraph::printConnections(){
 
     for(int i = 0; i < vertexes; i++){
         if(this->edges[i] != NULL){
-            std::cout << std::setw(10) << this->label[i] << " connects to: \n";
+            std::cout << std::setw(10) << this->edges[i]->label << " connects to: \n";
             EdgeNode *curr = this->edges[i];
             while(curr != NULL){
-                std::cout <<std::setw(14) << this->label[curr->key] << " distance - " << curr->weight << " miles"<< std::endl;
+                std::cout <<std::setw(14) << this->edges[curr->key]->label << " distance - " << curr->weight << " miles"<< std::endl;
                 curr = curr->next;
             }
             std::cout<<std::endl;
@@ -319,12 +351,12 @@ return distance[end];
 // Prints out solution to traveling salesman problem to terminal and outfile
 void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
 
-    std::cout << "\n\nMinimial cost path: " << work->label[0] <<" -> ";
+    std::cout << "\n\nMinimial cost path: " << work->edges[0]->label <<" -> ";
     for(int i =0; i < vertexes-1; i++){
         if(i == vertexes-2)
-            std::cout << work->label[tspPath[i]] << " -> " << work->label[0];
+            std::cout << work->edges[tspPath[i]]->label << " -> " << work->edges[0]->label;
         else{
-            std::cout << work->label[tspPath[i]] << " -> ";
+            std::cout << work->edges[tspPath[i]]->label << " -> ";
         }
 
     }
@@ -336,20 +368,22 @@ void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
     std::ofstream out;
     out.open ("FinalProjectText.txt", std::ios::out | std::ios::app);
         
-        out << "\n\nMinimial cost path: " << work->label[0] <<" -> ";
+        out << "\n\nMinimial cost path: " << work->edges[0]->label <<" -> ";
         for(int i =0; i < vertexes-1; i++){
             if(i == vertexes-2)
-                out << work->label[tspPath[i]] << " -> " << work->label[0];
+                out << work->edges[tspPath[i]]->label << " -> " << work->edges[0]->label;
             else{
-                out << work->label[tspPath[i]] << " -> ";
+                out << work->edges[tspPath[i]]->label << " -> ";
             }
 
         }
         out << "\nMiles: " << miles;
         out << "\nGallons of gas (40 mpg): " << miles/MPG;
         out << "\nCost using Nevada average per gallon (" << NPG << "): " << (miles/MPG)*NPG<<std::endl;
-
+        
     out.close();
+
+        std::cout << work->edges[0]->label;
 }
 
 
@@ -361,27 +395,20 @@ WeightedGraph *work = new WeightedGraph(false);
 
 // Load labels, might move this to Node/NodeEdge class.
 // 0 - Reno, 1 - Salt Lake City, 2 - Las Vegas, 3 - San Fran, 4 - Seattle
-// Many ways of approaching this, can collect user input.
-// Vertexes must be counted for as of this time.
-work->label[0] = "Reno";
-work->label[1] = "Salt Lake City";
-work->label[2] = "Las Vegas";
-work->label[3] = "San Fransico";
-work->label[4] = "Seattle";
 
 // May change, add into edge node a incrementer to keep count of vertexes
 // int vertexes =5;
 
 // work->setVertexes(vertexes);
 
-work->addEdge(0, 1, 518, false);
-work->addEdge(0, 2, 444, false);
-work->addEdge(0, 3, 218, false);
-work->addEdge(0, 4, 704, false);
-work->addEdge(1, 4, 841, false);
-work->addEdge(2, 3, 571, false);
-work->addEdge(2, 1, 420, false);
-work->addEdge(3, 4, 808, false);
+work->addEdge(0, 1, 518, "Reno", "Salt Lake City", false);
+work->addEdge(0, 2, 444, "Reno", "Las Vegas", false);
+work->addEdge(0, 3, 218, "Reno", "San Fransico", false);
+work->addEdge(0, 4, 704, "Reno", "Seattle", false);
+work->addEdge(1, 4, 841, "Salt Lake City", "Seattle", false);
+work->addEdge(2, 3, 571, "Las Vegas", "San Franisco", false);
+work->addEdge(2, 1, 420, "Las Vegas", "Salt Lake City", false);
+work->addEdge(3, 4, 808, "San Francisco", "Seattle", false);
 
 // Create a 2D array for purpose of solving TSP problem.
 int vertexes = 5;
