@@ -111,8 +111,11 @@ void WeightedGraph::setVertexes(int V){
 }
 // addEdge will add a weighted edge to edges[] with ( start, end, edge weight, undirected/directed ) parameter
 void WeightedGraph::addEdge(int x, int y, int weight, bool directed){
+    // This will increment vertexes as the edges are added.
+    if(edges[x]==NULL)
+        vertexes++;
     // This will bounds check between 0  to vertexes. 
-    if(x+1 > 0 && x < vertexes + 1 && y+1 > 0 && y <vertexes +1){
+    if(x+1 > 0 && x < vertexes + 1 && y+1 > 0 && y <vertexes + 1){
         // This will create and set weight to y
         EdgeNode *edge = new EdgeNode(y, weight);
         // This will set created edge->next to x's node location in edges[] 
@@ -367,9 +370,9 @@ work->label[3] = "San Fransico";
 work->label[4] = "Seattle";
 
 // May change, add into edge node a incrementer to keep count of vertexes
-int vertexes =5;
+// int vertexes =5;
 
-work->setVertexes(vertexes);
+// work->setVertexes(vertexes);
 
 work->addEdge(0, 1, 518, false);
 work->addEdge(0, 2, 444, false);
@@ -381,6 +384,7 @@ work->addEdge(2, 1, 420, false);
 work->addEdge(3, 4, 808, false);
 
 // Create a 2D array for purpose of solving TSP problem.
+int vertexes = 5;
 int **adjMatrix;
 adjMatrix = new int *[vertexes];
 for(int i = 0; i<vertexes; i++)
