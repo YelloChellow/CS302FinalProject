@@ -53,6 +53,7 @@ tspPrint(tspPath, tspMiles, vertexes, work);
 }
 
 // Prints out solution to traveling salesman problem to terminal and outfile
+// Note that work done for TSP was done within the class object itself
 void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
 
     std::cout << "\n\nMinimial cost path: " << work->edges[0]->label <<" -> ";
@@ -68,7 +69,7 @@ void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
     std::cout << "\nGallons of gas (40 mpg): " << miles/MPG;
     std::cout << "\nCost using Nevada average per gallon (2.324): " << (miles/MPG)*NPG<<std::endl;
   
-    // This will open previously created file and appean to it.
+    // This will open previously created file and append to it.
     std::ofstream out;
     out.open ("FinalProjectText.txt", std::ios::out | std::ios::app);
         
