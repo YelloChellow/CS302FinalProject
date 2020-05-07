@@ -51,7 +51,7 @@ int tspMiles = work->tsp(adjMatrix, tspPath, 0);
 
 tspPrint(tspPath, tspMiles, vertexes, work);
 
-std::cout <<"\nImplementing removeEdge:";
+std::cout << "\nImplementing removeEdge:\n";
 //Example of the removeEdge(origin, destination, directed)
 // removeEdge(0,1, false) == removeEdge (reno, salt lake city, undirected)
 work->removeEdge(0, 1, false);
