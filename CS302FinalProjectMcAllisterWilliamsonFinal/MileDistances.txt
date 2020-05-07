@@ -1,0 +1,9 @@
+Mile Distances
+
+		City x City Matrix by Miles
+-----------------------------------------------------
+Reno            0  -  518  -  444  -  218  -  704
+Salt Lake City  518 -   0  -  420  -  738  -  841
+Las Vegas       444 - 420  -    0  -  571  - 1148
+San Francisco   218 - 736  -  571  -    0  -  808
+Seattle         704 - 841  -  1148 -  808  -    0
