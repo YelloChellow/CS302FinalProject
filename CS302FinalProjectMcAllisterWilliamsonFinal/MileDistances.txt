@@ -1,4 +1,4 @@
-Mile Distances
+Mile Distances- These are the original distances between each city. The other .txt file is output from the program.
 
 		City x City Matrix by Miles
 -----------------------------------------------------

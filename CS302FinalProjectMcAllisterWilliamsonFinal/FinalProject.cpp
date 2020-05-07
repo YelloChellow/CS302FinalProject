@@ -90,6 +90,4 @@ void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
         out << "\nCost using Nevada average per gallon (" << NPG << "): " << (miles/MPG)*NPG<<std::endl;
         
     out.close();
-
-        std::cout << work->edges[0]->label;
 }
