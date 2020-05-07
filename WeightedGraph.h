@@ -23,6 +23,8 @@ public:
     // Constructor with (directed/undirected) parameter.
     WeightedGraph(bool);
     
+
+    void removeEdge(int, int, bool);
     void setVertexes(int V);
     // Solves Traveling SalesMan Problem (min array path, start node key) parameters
     int tsp(int **adjMatrix, int tspPath[], int start);

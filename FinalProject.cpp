@@ -50,6 +50,15 @@ int tspPath[vertexes];
 int tspMiles = work->tsp(adjMatrix, tspPath, 0);
 
 tspPrint(tspPath, tspMiles, vertexes, work);
+
+std::cout <<"\nImplementing removeEdge:";
+//Example of the removeEdge(origin, destination, directed)
+// removeEdge(0,1, false) == removeEdge (reno, salt lake city, undirected)
+work->removeEdge(0, 1, false);
+work->removeEdge(0, 2, false);
+work->removeEdge(0, 3, false);
+work->printConnections();
+delete work;
 }
 
 // Prints out solution to traveling salesman problem to terminal and outfile
@@ -89,6 +98,4 @@ void tspPrint(int tspPath[], int miles, int vertexes, WeightedGraph* work){
         out << "\nCost using Nevada average per gallon (" << NPG << "): " << (miles/MPG)*NPG<<std::endl;
         
     out.close();
-
-        std::cout << work->edges[0]->label;
 }

@@ -13,6 +13,24 @@ WeightedGraph::WeightedGraph(bool directed){
     }
 }
 
+void WeightedGraph::removeEdge(int x,int y, bool directed){
+    EdgeNode *currentPtr = edges[x];
+    EdgeNode *deletePtr = currentPtr->next;
+    
+    while(currentPtr->next != NULL){
+        if(deletePtr->key == y){
+            currentPtr->next = deletePtr->next;
+            delete deletePtr;
+
+            if(directed == false){
+                removeEdge(y, x, true);
+            }
+        }
+        currentPtr = deletePtr;
+        deletePtr = deletePtr->next;
+    }
+    
+}
 void WeightedGraph::setVertexes(int V){
     this->vertexes = V;
 }
